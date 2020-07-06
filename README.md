@@ -46,10 +46,12 @@ zrad@zrDell$ ssh-keygen -t rsa -f ./id_rsa_freeipa
 
 Создаю пользователя во FreeIPA, сразу добавляю публичный ключ
 ```
-ipa user-add user1 --first=Vasiliy --last=P --password password --shell=bash --sshpubkey='ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCsWqMv7ZZB2WG6fWPPX5VZBY75Oz7xptwRut55Noq/DaUR2pMQ52o36i8AeHnSns6lRDPO0H2kL4NdUIWzASjfthqgawmlKfzKMkVmpGZ3w36jr/5Ln6b+HBFeBdQpAhZKSCY4NilpWM3cmjNIN1EG7evFh/TG+c+sX5RR5JArqoNjePHVWuO4i9Rb88hgLvzO0ZYVg/KZnw9Eo0da4MBqWkY8VAb9XpLPJG/QqVgp5srOUHCWmzqzpBzJt5YZ0VbL74n98/SR0hADxv7UHVMSnGK9oQwtleREzSjPHX5JPt5Aw1HW2DhNiNAb53zpE5TcKMQfprO+K46p21n2KsXX'
+ipa user-add user1 --first=Vasiliy --last=P \
+--password password --shell=bash \
+--sshpubkey='ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCsWqMv7ZZB2WG6fWPPX5VZBY75Oz7xptwRut55Noq/DaUR2pMQ52o36i8AeHnSns6lRDPO0H2kL4NdUIWzASjfthqgawmlKfzKMkVmpGZ3w36jr/5Ln6b+HBFeBdQpAhZKSCY4NilpWM3cmjNIN1EG7evFh/TG+c+sX5RR5JArqoNjePHVWuO4i9Rb88hgLvzO0ZYVg/KZnw9Eo0da4MBqWkY8VAb9XpLPJG/QqVgp5srOUHCWmzqzpBzJt5YZ0VbL74n98/SR0hADxv7UHVMSnGK9oQwtleREzSjPHX5JPt5Aw1HW2DhNiNAb53zpE5TcKMQfprO+K46p21n2KsXX'
 ```
 
-ipa user-add user1 --first=Vasiliy --last=P --password password --shell=bash --sshpubkey='ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCsWqMv7ZZB2WG6fWPPX5VZBY75Oz7xptwRut55Noq/DaUR2pMQ52o36i8AeHnSns6lRDPO0H2kL4NdUIWzASjfthqgawmlKfzKMkVmpGZ3w36jr/5Ln6b+HBFeBdQpAhZKSCY4NilpWM3cmjNIN1EG7evFh/TG+c+sX5RR5JArqoNjePHVWuO4i9Rb88hgLvzO0ZYVg/KZnw9Eo0da4MBqWkY8VAb9XpLPJG/QqVgp5srOUHCWmzqzpBzJt5YZ0VbL74n98/SR0hADxv7UHVMSnGK9oQwtleREzSjPHX5JPt5Aw1HW2DhNiNAb53zpE5TcKMQfprO+K46p21n2KsXX'
+
 
 ## Проверка
 
