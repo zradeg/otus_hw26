@@ -1,0 +1,102 @@
+---
+- hosts: all
+  become: yes
+  tasks:
+  - name: set timezone
+    command: ln -sf /usr/share/zoneinfo/Europe/Moscow /etc/localtime
+
+  - name: update nss package
+    yum: name=nss state=latest
+
+- hosts: freeipa
+  become: yes
+  tasks:
+  - name: install packages
+    yum: name={{ item }} state=latest
+    with_items:
+      - vim
+      - ipa-server
+      - ipa-server-dns
+
+  - name: ensure firewalld is running and enabled
+    service: name=firewalld state=started enabled=yes
+
+  - name: add google dns to resolv.conf
+    lineinfile:
+      dest: /etc/resolv.conf
+      line: "{{ item }}"
+    with_items:
+      - nameserver 8.8.8.8
+      - nameserver 8.8.4.4
+
+  - name: copy server hosts file
+    copy: src=./freeipa_hosts dest=/etc/hosts owner=root group=root mode=0644
+
+  - name: configure freeipa
+    command: |
+      ipa-server-install -U \
+      -r HW-OTUS.LOCAL \
+      -n hw-otus.local \
+      -p otusotus \
+      -a otusotus \
+      --hostname=freeipa.hw-otus.local \
+      --ip-address=192.168.11.10 \
+      --mkhomedir \
+      --setup-dns \
+      --auto-forwarders \
+      --auto-reverse
+
+  - ipa_user:
+      name: user1
+      givenname: Vasiliy
+      sn: P
+      password: password
+      sshpubkey:
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCsWqMv7ZZB2WG6fWPPX5VZBY75Oz7xptwRut55Noq/DaUR2pMQ52o36i8AeHnSns6lRDPO0H2kL4NdUIWzASjfthqgawmlKfzKMkVmpGZ3w36jr/5Ln6b+HBFeBdQpAhZKSCY4NilpWM3cmjNIN1EG7evFh/TG+c+sX5RR5JArqoNjePHVWuO4i9Rb88hgLvzO0ZYVg/KZnw9Eo0da4MBqWkY8VAb9XpLPJG/QqVgp5srOUHCWmzqzpBzJt5YZ0VbL74n98/SR0hADxv7UHVMSnGK9oQwtleREzSjPHX5JPt5Aw1HW2DhNiNAb53zpE5TcKMQfprO+K46p21n2KsXX
+      loginshell: /bin/bash
+      ipa_host: freeipa.hw-otus.local
+      ipa_user: admin
+      ipa_pass: otusotus
+
+
+#  - name: allow freeipa network activity
+#    command: "{{ item }}"
+#    with_items:
+#    - firewall-cmd --permanent --add-port=53/{tcp,udp} --add-port=80/tcp --add-port=88/{tcp,udp} --add-port=123/udp --add-port=389/tcp --add-port=443/tcp --add-port=464/{tcp,udp} --add-port=636/tcp
+#    - firewall-cmd --reload
+  - name: allow freeipa network activity
+    firewalld:
+      service: "{{ item }}"
+      permanent: yes
+      immediate: yes
+      state: enabled
+    loop:
+      - ntp
+      - http
+      - https
+      - ldap
+      - ldaps
+      - kerberos
+      - kpasswd
+      - dns
+
+- hosts: client
+  become: yes
+  tasks:
+
+  - name: install freeipa package
+    yum: name=freeipa-client state=latest
+
+  - name: add ipa-server as nameserver
+    copy: src=./client_resolv.conf dest=/etc/resolv.conf owner=root group=root mode=0644
+
+  - name: configure ipa-client
+    command: |
+      ipa-client-install -U \
+      --principal admin@HW-OTUS.LOCAL \
+      --password otusotus \
+      --server freeipa.hw-otus.local \
+      --domain hw-otus.local \
+      --realm HW-OTUS.LOCAL \
+      --mkhomedir \
+      --force-join
