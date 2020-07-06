@@ -58,12 +58,6 @@
       ipa_user: admin
       ipa_pass: otusotus
 
-
-#  - name: allow freeipa network activity
-#    command: "{{ item }}"
-#    with_items:
-#    - firewall-cmd --permanent --add-port=53/{tcp,udp} --add-port=80/tcp --add-port=88/{tcp,udp} --add-port=123/udp --add-port=389/tcp --add-port=443/tcp --add-port=464/{tcp,udp} --add-port=636/tcp
-#    - firewall-cmd --reload
   - name: allow freeipa network activity
     firewalld:
       service: "{{ item }}"
@@ -100,3 +94,9 @@
       --realm HW-OTUS.LOCAL \
       --mkhomedir \
       --force-join
+
+  - name: firewalld start
+    systemd:
+      name: firewalld
+      state: started
+      enabled: yes
